@@ -1,7 +1,8 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
 
 export default function ClientLayout({ children }) {
   return (
@@ -131,6 +132,14 @@ function Nav() {
 }
 
 function Footer() {
+  const [config, setConfig] = useState(null);
+
+  useEffect(() => {
+    supabase.from('configuracion_web').select('*').eq('id', 1).single().then(({ data }) => {
+      if (data) setConfig(data);
+    });
+  }, []);
+
   return (
     <footer style={{
       background: 'var(--charcoal)',
@@ -162,9 +171,9 @@ function Footer() {
         </div>
         <div>
           <h4 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1rem', color: '#fff', marginBottom: '1rem' }}>Contacto</h4>
-          <p style={{ fontSize: '0.875rem', color: '#9E9E9E', marginBottom: '0.5rem' }}>📍 Tu ciudad, Argentina</p>
-          <p style={{ fontSize: '0.875rem', color: '#9E9E9E', marginBottom: '0.5rem' }}>📞 +54 11 0000-0000</p>
-          <p style={{ fontSize: '0.875rem', color: '#9E9E9E' }}>📧 hola@almecosmetologia.com</p>
+          <p style={{ fontSize: '0.875rem', color: '#9E9E9E', marginBottom: '0.5rem' }}>📍 {config?.contacto_direccion || 'Tu ciudad, Argentina'}</p>
+          <p style={{ fontSize: '0.875rem', color: '#9E9E9E', marginBottom: '0.5rem' }}>📞 {config?.contacto_telefono || '+54 11 0000-0000'}</p>
+          <p style={{ fontSize: '0.875rem', color: '#9E9E9E' }}>📧 {config?.contacto_email || 'hola@almecosmetologia.com'}</p>
         </div>
       </div>
       <div style={{ borderTop: '1px solid #333', paddingTop: '1.5rem', textAlign: 'center', fontSize: '0.8rem', color: '#757575' }}>

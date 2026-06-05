@@ -14,7 +14,22 @@ const testimonials = [
   { name: 'Camila M.', text: 'El facial me dejó la piel radiante. Ya saqué turno para el mes que viene.', stars: 5 },
 ];
 
+import { useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
+
 export default function HomePage() {
+  const [config, setConfig] = useState(null);
+  const [servicios, setServicios] = useState([]);
+
+  useEffect(() => {
+    supabase.from('configuracion_web').select('*').eq('id', 1).single().then(({ data }) => {
+      if (data) setConfig(data);
+    });
+    supabase.from('servicios').select('*').eq('activo', true).limit(6).then(({ data }) => {
+      if (data) setServicios(data);
+    });
+  }, []);
+
   return (
     <>
       {/* ── Hero ─────────────────────────────────────────── */}
@@ -46,13 +61,11 @@ export default function HomePage() {
           </span>
 
           <h1 className="fade-in-up delay-1" style={{ fontSize: 'clamp(2.5rem, 6vw, 4rem)', fontWeight: 700, color: 'var(--charcoal)', marginBottom: '1.25rem' }}>
-            Tu mejor versión<br />
-            empieza en{' '}
-            <span className="gradient-text">Alme</span>
+            {config ? config.hero_titulo : 'Tu mejor versión empieza en Alme'}
           </h1>
 
           <p className="fade-in-up delay-2" style={{ fontSize: '1.125rem', color: 'var(--muted)', maxWidth: '520px', margin: '0 auto 2.5rem', lineHeight: 1.75 }}>
-            Reservá tu cita en segundos y descubrí por qué somos el lugar favorito de belleza de nuestra comunidad. Tratamientos premium, profesionales reales.
+            {config ? config.hero_subtitulo : 'Reservá tu cita en segundos y descubrí por qué somos el lugar favorito de belleza.'}
           </p>
 
           <div className="fade-in-up delay-3" style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -131,26 +144,22 @@ export default function HomePage() {
             gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
             gap: '1.5rem',
           }}>
-            {[
-              { icon: '💇‍♀️', cat: 'Cabello', name: 'Corte y Peinado', price: '$3.500', time: '60 min' },
-              { icon: '🎨', cat: 'Cabello', name: 'Coloración & Mechas', price: 'Desde $8.500', time: '120 min' },
-              { icon: '🌿', cat: 'Tratamientos', name: 'Keratina Premium', price: '$15.000', time: '180 min' },
-              { icon: '💅', cat: 'Uñas', name: 'Manicura & Pedicura', price: 'Desde $2.500', time: '60 min' },
-              { icon: '✨', cat: 'Facial', name: 'Facial Hidratante', price: '$4.500', time: '60 min' },
-              { icon: '💄', cat: 'Maquillaje', name: 'Maquillaje Social', price: '$5.500', time: '60 min' },
-            ].map((s, i) => (
-              <div key={i} className="card" style={{ padding: '1.5rem' }}>
+            {servicios.map((s) => (
+              <div key={s.id} className="card" style={{ padding: '1.5rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
-                  <span style={{ fontSize: '2rem' }}>{s.icon}</span>
-                  <span className="badge badge-rose">{s.cat}</span>
+                  <span style={{ fontSize: '2rem' }}>✨</span>
+                  <span className="badge badge-rose">{s.categoria || 'General'}</span>
                 </div>
-                <h3 style={{ fontSize: '1.05rem', fontFamily: "'Playfair Display', serif", color: 'var(--charcoal)', marginBottom: '0.5rem' }}>{s.name}</h3>
+                <h3 style={{ fontSize: '1.05rem', fontFamily: "'Playfair Display', serif", color: 'var(--charcoal)', marginBottom: '0.5rem' }}>{s.nombre}</h3>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid var(--border)' }}>
-                  <span style={{ fontWeight: 700, color: 'var(--rose)', fontSize: '1.05rem' }}>{s.price}</span>
-                  <span style={{ fontSize: '0.8rem', color: 'var(--muted)' }}>⏱ {s.time}</span>
+                  <span style={{ fontWeight: 700, color: 'var(--rose)', fontSize: '1.05rem' }}>${s.precio.toLocaleString('es-AR')}</span>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--muted)' }}>⏱ {s.duracion_minutos} min</span>
                 </div>
               </div>
             ))}
+            {servicios.length === 0 && (
+              <div style={{ padding: '2rem', textAlign: 'center', gridColumn: '1 / -1' }}>Cargando servicios...</div>
+            )}
           </div>
 
           <div style={{ textAlign: 'center', marginTop: '3rem' }}>
