@@ -178,13 +178,19 @@ function Footer() {
           {(config?.link_instagram || config?.link_facebook) && (
             <div style={{ marginTop: '1.5rem', display: 'flex', gap: '1rem' }}>
               {config?.link_instagram && (
-                <a href={config.link_instagram} target="_blank" rel="noopener noreferrer" style={{ color: '#9E9E9E', textDecoration: 'none', transition: 'color 0.2s' }}>
-                  Instagram
+                <a href={config.link_instagram} target="_blank" rel="noopener noreferrer" style={{ color: '#9E9E9E', transition: 'color 0.2s' }} aria-label="Instagram">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                  </svg>
                 </a>
               )}
               {config?.link_facebook && (
-                <a href={config.link_facebook} target="_blank" rel="noopener noreferrer" style={{ color: '#9E9E9E', textDecoration: 'none', transition: 'color 0.2s' }}>
-                  Facebook
+                <a href={config.link_facebook} target="_blank" rel="noopener noreferrer" style={{ color: '#9E9E9E', transition: 'color 0.2s' }} aria-label="Facebook">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                  </svg>
                 </a>
               )}
             </div>

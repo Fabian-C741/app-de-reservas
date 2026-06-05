@@ -20,7 +20,11 @@ export default function ConfigPage() {
     contacto_email: '',
     contacto_direccion: '',
     link_instagram: '',
-    link_facebook: ''
+    link_facebook: '',
+    horario_manana_inicio: '09:00',
+    horario_manana_fin: '13:00',
+    horario_tarde_inicio: '14:00',
+    horario_tarde_fin: '19:00'
   });
 
   // Auth check
@@ -134,6 +138,30 @@ export default function ConfigPage() {
                   <div>
                     <label>Dirección del local</label>
                     <input className="input-field" value={form.contacto_direccion || ''} onChange={e => setForm({ ...form, contacto_direccion: e.target.value })} />
+                  </div>
+                </div>
+              </div>
+
+              <hr style={{ border: 'none', borderTop: '1px solid var(--border)' }} />
+
+              <div>
+                <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem', color: 'var(--rose)' }}>Horarios de Atención</h3>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                  <div>
+                    <label style={{ color: 'var(--charcoal)', fontWeight: 600 }}>Turno Mañana</label>
+                    <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+                      <input type="time" className="input-field" value={form.horario_manana_inicio || '09:00'} onChange={e => setForm({ ...form, horario_manana_inicio: e.target.value })} title="Inicio mañana" />
+                      <span style={{ alignSelf: 'center' }}>a</span>
+                      <input type="time" className="input-field" value={form.horario_manana_fin || '13:00'} onChange={e => setForm({ ...form, horario_manana_fin: e.target.value })} title="Fin mañana" />
+                    </div>
+                  </div>
+                  <div>
+                    <label style={{ color: 'var(--charcoal)', fontWeight: 600 }}>Turno Tarde</label>
+                    <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+                      <input type="time" className="input-field" value={form.horario_tarde_inicio || '14:00'} onChange={e => setForm({ ...form, horario_tarde_inicio: e.target.value })} title="Inicio tarde" />
+                      <span style={{ alignSelf: 'center' }}>a</span>
+                      <input type="time" className="input-field" value={form.horario_tarde_fin || '19:00'} onChange={e => setForm({ ...form, horario_tarde_fin: e.target.value })} title="Fin tarde" />
+                    </div>
                   </div>
                 </div>
               </div>

@@ -14,8 +14,6 @@ const FALLBACK_SERVICIOS = [
   { id: '8', nombre: 'Maquillaje Social', duracion_minutos: 60, precio: 5500, categoria: 'Maquillaje' },
 ];
 
-const HORARIOS = ['09:00', '10:00', '11:00', '12:00', '14:00', '15:00', '16:00', '17:00', '18:00'];
-
 function formatPrice(p) {
   return '$' + Number(p).toLocaleString('es-AR');
 }
@@ -44,14 +42,45 @@ function ReservarForm() {
   const [horariosOcupados, setHorariosOcupados] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [configuracion, setConfiguracion] = useState(null);
 
   useEffect(() => {
-    async function fetchServicios() {
-      const { data } = await supabase.from('servicios').select('id, nombre, duracion_minutos, precio, categoria').eq('activo', true);
-      if (data && data.length > 0) setServicios(data);
+    async function fetchData() {
+      const { data: servData } = await supabase.from('servicios').select('id, nombre, duracion_minutos, precio, categoria').eq('activo', true);
+      if (servData && servData.length > 0) setServicios(servData);
+
+      const { data: confData } = await supabase.from('configuracion_web').select('*').eq('id', 1).single();
+      if (confData) setConfiguracion(confData);
     }
-    fetchServicios();
+    fetchData();
   }, []);
+
+  function generarHorarios() {
+    const defaultMInicio = '09:00';
+    const defaultMFin = '13:00';
+    const defaultTInicio = '14:00';
+    const defaultTFin = '19:00';
+
+    const mInicio = configuracion?.horario_manana_inicio || defaultMInicio;
+    const mFin = configuracion?.horario_manana_fin || defaultMFin;
+    const tInicio = configuracion?.horario_tarde_inicio || defaultTInicio;
+    const tFin = configuracion?.horario_tarde_fin || defaultTFin;
+
+    const parseHora = (hStr) => parseInt(hStr.split(':')[0], 10);
+    const slots = [];
+
+    for (let h = parseHora(mInicio); h < parseHora(mFin); h++) {
+      slots.push(`${h.toString().padStart(2, '0')}:00`);
+    }
+
+    for (let h = parseHora(tInicio); h < parseHora(tFin); h++) {
+      slots.push(`${h.toString().padStart(2, '0')}:00`);
+    }
+
+    return slots;
+  }
+  
+  const HORARIOS_DISPONIBLES = generarHorarios();
 
   useEffect(() => {
     if (form.fecha && form.servicio_id) {
@@ -254,7 +283,7 @@ function ReservarForm() {
                     <div>
                       <label style={{ marginBottom: '0.75rem' }}>Horario disponible</label>
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.625rem' }}>
-                        {HORARIOS.map(h => {
+                        {HORARIOS_DISPONIBLES.map(h => {
                           const ocupado = horariosOcupados.includes(h);
                           const seleccionado = form.hora === h;
                           return (
