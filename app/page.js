@@ -1,18 +1,7 @@
 'use client';
 import Link from 'next/link';
 
-const features = [
-  { icon: '✨', title: 'Calidad Premium', desc: 'Usamos solo productos profesionales de primera línea para garantizar resultados duraderos.' },
-  { icon: '🕒', title: 'Horarios Flexibles', desc: 'Turnos disponibles de lunes a sábado para adaptarnos a tu agenda y estilo de vida.' },
-  { icon: '💇‍♀️', title: 'Expertas Reales', desc: 'Nuestro equipo cuenta con años de experiencia y formación continua en tendencias globales.' },
-  { icon: '📱', title: 'Reserva Online', desc: 'Agendá tu cita en segundos desde donde estés, sin llamadas ni esperas innecesarias.' },
-];
 
-const testimonials = [
-  { name: 'Valentina G.', text: 'El mejor lugar donde fui. Me hicieron el balayage soñado y el trato fue increíble.', stars: 5 },
-  { name: 'Sofía R.', text: 'Reservé online en minutos y la atención superó todas mis expectativas. ¡100% recomendable!', stars: 5 },
-  { name: 'Camila M.', text: 'El facial me dejó la piel radiante. Ya saqué turno para el mes que viene.', stars: 5 },
-];
 
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
@@ -20,6 +9,8 @@ import { supabase } from '../lib/supabase';
 export default function HomePage() {
   const [config, setConfig] = useState(null);
   const [servicios, setServicios] = useState([]);
+  const [ventajas, setVentajas] = useState([]);
+  const [testimonios, setTestimonios] = useState([]);
 
   useEffect(() => {
     supabase.from('configuracion_web').select('*').eq('id', 1).single().then(({ data }) => {
@@ -27,6 +18,12 @@ export default function HomePage() {
     });
     supabase.from('servicios').select('*').eq('activo', true).limit(6).then(({ data }) => {
       if (data) setServicios(data);
+    });
+    supabase.from('ventajas').select('*').eq('activo', true).then(({ data }) => {
+      if (data) setVentajas(data);
+    });
+    supabase.from('testimonios').select('*').eq('activo', true).then(({ data }) => {
+      if (data) setTestimonios(data);
     });
   }, []);
 
@@ -70,7 +67,7 @@ export default function HomePage() {
 
           <div className="fade-in-up delay-3" style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
             <Link href="/reservar" className="btn-primary" style={{ fontSize: '1rem', padding: '1rem 2.25rem' }}>
-              Reservar mi cita →
+              {config?.hero_boton_texto || 'Reservar mi cita →'}
             </Link>
             <Link href="/servicios" className="btn-outline" style={{ fontSize: '1rem', padding: '1rem 2.25rem' }}>
               Ver servicios
@@ -107,8 +104,8 @@ export default function HomePage() {
             gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
             gap: '1.5rem',
           }}>
-            {features.map((f, i) => (
-              <div key={i} className="card" style={{ padding: '2rem 1.75rem' }}>
+            {ventajas.map((v) => (
+              <div key={v.id} className="card" style={{ padding: '2rem 1.75rem' }}>
                 <div style={{
                   width: 56, height: 56,
                   background: 'linear-gradient(135deg, var(--blush), var(--rose-light))',
@@ -116,11 +113,12 @@ export default function HomePage() {
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: '1.5rem',
                   marginBottom: '1.25rem',
-                }}>{f.icon}</div>
-                <h3 style={{ fontSize: '1.1rem', fontFamily: "'Playfair Display', serif", color: 'var(--charcoal)', marginBottom: '0.625rem' }}>{f.title}</h3>
-                <p style={{ fontSize: '0.9rem', color: 'var(--muted)', lineHeight: 1.7 }}>{f.desc}</p>
+                }}>{v.icono}</div>
+                <h3 style={{ fontSize: '1.1rem', fontFamily: "'Playfair Display', serif", color: 'var(--charcoal)', marginBottom: '0.625rem' }}>{v.titulo}</h3>
+                <p style={{ fontSize: '0.9rem', color: 'var(--muted)', lineHeight: 1.7 }}>{v.descripcion}</p>
               </div>
             ))}
+            {ventajas.length === 0 && <div style={{ textAlign: 'center', gridColumn: '1 / -1', padding: '2rem' }}>Cargando ventajas...</div>}
           </div>
         </div>
       </section>
@@ -188,8 +186,8 @@ export default function HomePage() {
             gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
             gap: '1.5rem',
           }}>
-            {testimonials.map((t, i) => (
-              <div key={i} style={{
+            {testimonios.map((t) => (
+              <div key={t.id} style={{
                 background: 'rgba(255,255,255,0.12)',
                 backdropFilter: 'blur(8px)',
                 border: '1px solid rgba(255,255,255,0.2)',
@@ -197,16 +195,17 @@ export default function HomePage() {
                 padding: '1.75rem',
               }}>
                 <div style={{ color: '#FFD700', fontSize: '1rem', marginBottom: '0.75rem' }}>
-                  {'★'.repeat(t.stars)}
+                  {'★'.repeat(t.estrellas)}
                 </div>
                 <p style={{ fontSize: '0.9375rem', lineHeight: 1.7, color: 'rgba(255,255,255,0.9)', marginBottom: '1.25rem' }}>
-                  "{t.text}"
+                  "{t.texto}"
                 </p>
                 <div style={{ fontWeight: 600, fontSize: '0.875rem', color: 'rgba(255,255,255,0.75)' }}>
-                  — {t.name}
+                  — {t.nombre_cliente}
                 </div>
               </div>
             ))}
+            {testimonios.length === 0 && <div style={{ textAlign: 'center', gridColumn: '1 / -1', padding: '2rem' }}>Cargando testimonios...</div>}
           </div>
         </div>
       </section>
@@ -222,7 +221,7 @@ export default function HomePage() {
             Reservá en segundos, sin llamadas. Elegí tu servicio, tu día y tu hora favorita.
           </p>
           <Link href="/reservar" className="btn-primary" style={{ fontSize: '1.0625rem', padding: '1.125rem 2.75rem' }}>
-            Reservar mi cita gratis →
+            {config?.hero_boton_texto || 'Reservar mi cita gratis →'}
           </Link>
         </div>
       </section>

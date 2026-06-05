@@ -174,6 +174,21 @@ function Footer() {
           <p style={{ fontSize: '0.875rem', color: '#9E9E9E', marginBottom: '0.5rem' }}>📍 {config?.contacto_direccion || 'Tu ciudad, Argentina'}</p>
           <p style={{ fontSize: '0.875rem', color: '#9E9E9E', marginBottom: '0.5rem' }}>📞 {config?.contacto_telefono || '+54 11 0000-0000'}</p>
           <p style={{ fontSize: '0.875rem', color: '#9E9E9E' }}>📧 {config?.contacto_email || 'hola@almecosmetologia.com'}</p>
+          
+          {(config?.link_instagram || config?.link_facebook) && (
+            <div style={{ marginTop: '1.5rem', display: 'flex', gap: '1rem' }}>
+              {config?.link_instagram && (
+                <a href={config.link_instagram} target="_blank" rel="noopener noreferrer" style={{ color: '#9E9E9E', textDecoration: 'none', transition: 'color 0.2s' }}>
+                  Instagram
+                </a>
+              )}
+              {config?.link_facebook && (
+                <a href={config.link_facebook} target="_blank" rel="noopener noreferrer" style={{ color: '#9E9E9E', textDecoration: 'none', transition: 'color 0.2s' }}>
+                  Facebook
+                </a>
+              )}
+            </div>
+          )}
         </div>
       </div>
       <div style={{ borderTop: '1px solid #333', paddingTop: '1.5rem', textAlign: 'center', fontSize: '0.8rem', color: '#757575' }}>
