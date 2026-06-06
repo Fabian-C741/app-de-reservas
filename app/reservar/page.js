@@ -40,6 +40,7 @@ function ReservarForm() {
     notas: '',
   });
   const [horariosOcupados, setHorariosOcupados] = useState([]);
+  const [diaBloqueado, setDiaBloqueado] = useState(null); // null = libre, objeto = bloqueado
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [configuracion, setConfiguracion] = useState(null);
@@ -83,10 +84,23 @@ function ReservarForm() {
   const HORARIOS_DISPONIBLES = generarHorarios();
 
   useEffect(() => {
-    if (form.fecha && form.servicio_id) {
-      fetchHorariosOcupados(form.fecha);
+    if (form.fecha) {
+      setDiaBloqueado(null);
+      setHorariosOcupados([]);
+      setForm(prev => ({ ...prev, hora: '' }));
+      checkDiaBloqueado(form.fecha);
+      if (form.servicio_id) fetchHorariosOcupados(form.fecha);
     }
   }, [form.fecha, form.servicio_id]);
+
+  async function checkDiaBloqueado(fecha) {
+    const { data } = await supabase
+      .from('dias_bloqueados')
+      .select('motivo')
+      .eq('fecha', fecha)
+      .maybeSingle();
+    if (data) setDiaBloqueado(data);
+  }
 
   async function fetchHorariosOcupados(fecha) {
     const { data } = await supabase
@@ -108,6 +122,7 @@ function ReservarForm() {
     if (paso === 1 && !form.servicio_id) { setError('Por favor seleccioná un servicio.'); return false; }
     if (paso === 2) {
       if (!form.fecha) { setError('Por favor elegí una fecha.'); return false; }
+      if (diaBloqueado) { setError('Este día está cerrado. Por favor elegí otra fecha.'); return false; }
       if (!form.hora) { setError('Por favor seleccioná un horario.'); return false; }
     }
     if (paso === 3) {
@@ -279,7 +294,30 @@ function ReservarForm() {
                       style={{ cursor: 'pointer' }} />
                   </div>
 
-                  {form.fecha && (
+                  {form.fecha && diaBloqueado ? (
+                    <div style={{
+                      padding: '1.25rem',
+                      background: '#FFF3E0',
+                      border: '1.5px solid #FFB74D',
+                      borderRadius: 'var(--radius-sm)',
+                      display: 'flex',
+                      alignItems: 'flex-start',
+                      gap: '0.875rem',
+                    }}>
+                      <span style={{ fontSize: '1.75rem' }}>🚫</span>
+                      <div>
+                        <div style={{ fontWeight: 600, color: '#E65100', fontSize: '0.9375rem', marginBottom: '0.25rem' }}>
+                          El local está cerrado este día
+                        </div>
+                        <div style={{ fontSize: '0.875rem', color: '#BF360C' }}>
+                          Motivo: {diaBloqueado.motivo || 'Día no disponible'}
+                        </div>
+                        <div style={{ fontSize: '0.8rem', color: '#E65100', marginTop: '0.5rem' }}>
+                          Por favor elegí otra fecha en el calendario.
+                        </div>
+                      </div>
+                    </div>
+                  ) : form.fecha && (
                     <div>
                       <label style={{ marginBottom: '0.75rem' }}>Horario disponible</label>
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.625rem' }}>
@@ -292,7 +330,7 @@ function ReservarForm() {
                               onClick={() => !ocupado && setForm(prev => ({ ...prev, hora: h }))}
                               style={{
                                 padding: '0.75rem',
-                                border: `2px solid ${seleccionado ? 'var(--rose)' : ocupado ? 'var(--border)' : 'var(--border)'}`,
+                                border: `2px solid ${seleccionado ? 'var(--rose)' : 'var(--border)'}`,
                                 borderRadius: 'var(--radius-sm)',
                                 background: seleccionado ? 'var(--rose)' : ocupado ? '#F5F5F5' : 'var(--surface)',
                                 color: seleccionado ? '#fff' : ocupado ? '#BDBDBD' : 'var(--charcoal)',
