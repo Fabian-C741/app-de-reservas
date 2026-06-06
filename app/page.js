@@ -128,9 +128,11 @@ export default function HomePage() {
         <div className="container">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2.5rem', flexWrap: 'wrap', gap: '1rem' }}>
             <div>
-              <span className="badge badge-rose" style={{ marginBottom: '0.75rem' }}>Nuestros servicios</span>
+              <span className="badge badge-rose" style={{ marginBottom: '0.75rem' }}>
+                {config?.servicios_badge_texto || 'Nuestros servicios'}
+              </span>
               <h2 style={{ fontSize: 'clamp(1.75rem, 4vw, 2.25rem)', color: 'var(--charcoal)' }}>
-                Tratamientos que te van a encantar
+                {config?.servicios_titulo || 'Tratamientos que te van a encantar'}
               </h2>
               <div className="divider divider-left" />
             </div>

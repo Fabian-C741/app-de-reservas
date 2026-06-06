@@ -24,7 +24,9 @@ export default function ConfigPage() {
     horario_manana_inicio: '09:00',
     horario_manana_fin: '13:00',
     horario_tarde_inicio: '14:00',
-    horario_tarde_fin: '19:00'
+    horario_tarde_fin: '19:00',
+    servicios_badge_texto: '',
+    servicios_titulo: ''
   });
 
   // Auth check
@@ -118,6 +120,22 @@ export default function ConfigPage() {
                   <div>
                     <label>Texto del Botón Principal</label>
                     <input className="input-field" value={form.hero_boton_texto || ''} onChange={e => setForm({ ...form, hero_boton_texto: e.target.value })} />
+                  </div>
+                </div>
+              </div>
+
+              <hr style={{ border: 'none', borderTop: '1px solid var(--border)' }} />
+
+              <div>
+                <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem', color: 'var(--rose)' }}>Sección Servicios</h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  <div>
+                    <label>Etiqueta pequeña (ej: Nuestros servicios)</label>
+                    <input className="input-field" value={form.servicios_badge_texto || ''} onChange={e => setForm({ ...form, servicios_badge_texto: e.target.value })} />
+                  </div>
+                  <div>
+                    <label>Título de la sección</label>
+                    <input className="input-field" value={form.servicios_titulo || ''} onChange={e => setForm({ ...form, servicios_titulo: e.target.value })} />
                   </div>
                 </div>
               </div>
