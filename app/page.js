@@ -147,7 +147,9 @@ export default function HomePage() {
             {servicios.map((s) => (
               <div key={s.id} className="card" style={{ padding: '1.5rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
-                  <span style={{ fontSize: '2rem' }}>✨</span>
+                  <span style={{ fontSize: '2rem' }}>
+                    {{'Cabello': '💇‍♀️', 'Tratamientos': '🌿', 'Uñas': '💅', 'Facial': '🌸', 'Maquillaje': '💄', 'Masajes': '💆‍♀️', 'Pestañas': '👁️', 'Cejas': '✨', 'Depilación': '🦵', 'Spa': '🛁', 'Corporales': '🧘‍♀️', 'Barbería': '💈', 'Hombre': '💈'}[s.categoria] || '✨'}
+                  </span>
                   <span className="badge badge-rose">{s.categoria || 'General'}</span>
                 </div>
                 <h3 style={{ fontSize: '1.05rem', fontFamily: "'Playfair Display', serif", color: 'var(--charcoal)', marginBottom: '0.5rem' }}>{s.nombre}</h3>

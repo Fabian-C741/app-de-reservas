@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { supabase } from '../../lib/supabase';
 
-const CATEGORIAS = ['Todas', 'Cabello', 'Tratamientos', 'Uñas', 'Facial', 'Maquillaje'];
+// Las categorías ahora se generarán automáticamente basadas en la base de datos
 
 const FALLBACK_SERVICIOS = [
   { id: '1', nombre: 'Corte y Peinado', descripcion: 'Corte personalizado según tu estilo con lavado y secado profesional.', duracion_minutos: 60, precio: 3500, categoria: 'Cabello', icon: '💇‍♀️' },
@@ -22,6 +22,7 @@ function formatPrice(p) {
 
 export default function ServiciosPage() {
   const [servicios, setServicios] = useState(FALLBACK_SERVICIOS);
+  const [categorias, setCategorias] = useState(['Todas']);
   const [categoriaActiva, setCategoriaActiva] = useState('Todas');
   const [loading, setLoading] = useState(true);
 
@@ -34,8 +35,12 @@ export default function ServiciosPage() {
         .order('categoria');
       if (data && data.length > 0) {
         // Add icons based on category
-        const iconMap = { Cabello: '💇‍♀️', Tratamientos: '🌿', 'Uñas': '💅', Facial: '🌸', Maquillaje: '💄' };
+        const iconMap = { Cabello: '💇‍♀️', Tratamientos: '🌿', 'Uñas': '💅', Facial: '🌸', Maquillaje: '💄', Masajes: '💆‍♀️', Pestañas: '👁️', Cejas: '✨', Depilación: '🦵', Spa: '🛁', Corporales: '🧘‍♀️', Barbería: '💈', Hombre: '💈' };
         setServicios(data.map(s => ({ ...s, icon: iconMap[s.categoria] || '✨' })));
+        
+        // Dynamically get unique categories
+        const uniqueCats = ['Todas', ...new Set(data.map(s => s.categoria).filter(Boolean))];
+        setCategorias(uniqueCats);
       }
       setLoading(false);
     }
@@ -73,7 +78,7 @@ export default function ServiciosPage() {
       <section style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)', padding: '0 1.5rem' }}>
         <div className="container">
           <div style={{ display: 'flex', gap: '0.25rem', overflowX: 'auto', paddingBottom: '0', paddingTop: '0' }}>
-            {CATEGORIAS.map(cat => (
+            {categorias.map(cat => (
               <button
                 key={cat}
                 onClick={() => setCategoriaActiva(cat)}
